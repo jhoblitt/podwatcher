@@ -1,0 +1,12 @@
+apiVersion: fluffybunny.core.hoblitt.com/v1alpha1
+kind: Configuration
+metadata:
+  labels:
+    app.kubernetes.io/name: configuration
+    app.kubernetes.io/instance: configuration-sample
+    app.kubernetes.io/part-of: podwatcher
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: podwatcher
+  name: configuration-sample
+spec:
+  # TODO(user): Add fields here

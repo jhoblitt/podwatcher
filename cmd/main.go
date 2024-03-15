@@ -34,7 +34,9 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	fluffybunnyv1alpha1 "github.com/jhoblitt/podwatcher/api/fluffybunny/v1alpha1"
 	"github.com/jhoblitt/podwatcher/internal/controller"
+	fluffybunnycontroller "github.com/jhoblitt/podwatcher/internal/controller/fluffybunny"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -46,6 +48,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
+	utilruntime.Must(fluffybunnyv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -125,6 +128,13 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pod")
+		os.Exit(1)
+	}
+	if err = (&fluffybunnycontroller.ConfigurationReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Configuration")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
