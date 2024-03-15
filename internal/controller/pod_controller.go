@@ -46,9 +46,31 @@ type PodReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.0/pkg/reconcile
 func (r *PodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	pod := &corev1.Pod{}
+	if err := r.Get(ctx, req.NamespacedName, pod); err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	log.Info("Pod", "name", pod.Name, "namespace", pod.Namespace)
+
+	// If the pod is in the "foo" namespace, add the
+	// "core.hoblitt.com/podwatcher" annotation to the pod.
+	if pod.Namespace == "foo" {
+		if pod.Annotations == nil {
+			pod.Annotations = make(map[string]string)
+		}
+
+		if _, ok := pod.Annotations["core.hoblitt.com/podwatcher"]; !ok {
+			pod.Annotations["core.hoblitt.com/podwatcher"] = "true"
+
+			if err := r.Update(ctx, pod); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+	}
 
 	return ctrl.Result{}, nil
 }
