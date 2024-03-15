@@ -5,6 +5,7 @@
 domain: core.hoblitt.com
 layout:
 - go.kubebuilder.io/v4
+multigroup: true
 projectName: podwatcher
 repo: github.com/jhoblitt/podwatcher
 resources:
